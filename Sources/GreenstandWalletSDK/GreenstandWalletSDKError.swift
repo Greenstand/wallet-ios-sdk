@@ -9,4 +9,6 @@ public enum GreenstandWalletSDKError: Error {
     case missingRootURL
     case missingRootWalletName
     case missingRootWalletPassword
+    case tokensNotFound
+    case authenticationTokenNotFound
 }

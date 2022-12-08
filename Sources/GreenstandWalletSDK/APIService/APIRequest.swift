@@ -11,12 +11,18 @@ protocol APIRequest {
 extension APIRequest {
 
     func urlRequest(rootURL: URL, headers: [String: String]) -> URLRequest {
-
-        let url = rootURL.appendingPathComponent(endpoint.rawValue)
-
+        
+        var url = rootURL.appendingPathComponent(endpoint.rawValue)
+        if method == .GET {
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+            urlComponents?.queryItems = [URLQueryItem(name: "limit", value: "100")]
+            url = (urlComponents?.url)!
+        }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
-        urlRequest.httpBody = try? JSONEncoder().encode(parameters)
+        if method == .POST {
+            urlRequest.httpBody = try? JSONEncoder().encode(parameters)
+        }
 
         for header in headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
