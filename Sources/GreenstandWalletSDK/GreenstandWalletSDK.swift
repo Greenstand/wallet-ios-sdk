@@ -4,6 +4,7 @@ public protocol GreenstandWalletSDKProtocol {
     func myWallet(completion: @escaping (Result<Wallet, Error>) -> Void)
     func purchaseTokens(amount: Int, completion: @escaping (Result<TokenPurchaseReceipt, Error>) -> Void)
     func sendTokens(amount: Int, receivingWalletName: String, completion: @escaping (Result<TokenTransferReceipt, Error>) -> Void)
+    func setup(configuration: GreenstandWalletSDKConfiguration)
 }
 
 public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
@@ -36,7 +37,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     }
 
     public func signInWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let request = GetWalletsRequest()
+        let request = GetWalletsRequest(limit: 100)
         apiService.performRequest(request: request, completion: { [weak self] result in
             switch result {
             case .success(let response):
@@ -64,7 +65,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
             return
         }
 
-        let request = GetWalletsRequest()
+        let request = GetWalletsRequest(limit: 100)
         apiService.performRequest(request: request, completion: { result in
             switch result {
             case .success(let response):

@@ -16,12 +16,43 @@ extension APIRequest {
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
-        urlRequest.httpBody = try? JSONEncoder().encode(parameters)
+
+        if encodesParametersInURL {
+
+            let encodedURL: URL? = {
+
+                guard let jsonData = try? JSONEncoder().encode(parameters),
+                        let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any]
+                else {
+                    return nil
+                }
+
+                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+                urlComponents?.queryItems = jsonObject.map { (key, value) in
+                    return URLQueryItem(name: key, value: "\(value)")
+                }
+                return urlComponents?.url
+            }()
+
+            if let encodedURL {
+                urlRequest.url = encodedURL
+            }
+
+        } else {
+            urlRequest.httpBody = try? JSONEncoder().encode(parameters)
+        }
 
         for header in headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
         }
 
         return urlRequest
+    }
+
+    private var encodesParametersInURL: Bool {
+        switch method {
+        case .GET: return true
+        case .POST: return false
+        }
     }
 }

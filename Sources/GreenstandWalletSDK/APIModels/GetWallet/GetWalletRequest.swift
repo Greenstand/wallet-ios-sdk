@@ -1,9 +1,16 @@
 import Foundation
 
 struct GetWalletsRequest: APIRequest {
-    struct Parameters: Encodable { }
+    struct Parameters: Encodable {
+        let limit: Int
+    }
+    
     typealias ResponseType = GetWalletsResponse
-    let endpoint: Endpoint = .getWallets
+    let endpoint: Endpoint = .wallets
     let method: HTTPMethod = .GET
-    let parameters: Parameters = Parameters()
+    let parameters: Parameters
+    
+    init(limit: Int) {
+        self.parameters = Parameters(limit: limit)
+    }
 }
