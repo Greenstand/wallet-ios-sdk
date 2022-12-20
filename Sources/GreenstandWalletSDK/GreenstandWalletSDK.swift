@@ -42,7 +42,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     }
 
     public func signInWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let request = GetWalletsRequest()
+        let request = GetWalletsRequest(limit: 100)
         apiService.performRequest(request: request, completion: { [weak self] result in
             switch result {
             case .success(let response):
@@ -70,7 +70,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
             return
         }
 
-        let request = GetWalletsRequest()
+        let request = GetWalletsRequest(limit: 100)
         apiService.performRequest(request: request, completion: { result in
             switch result {
             case .success(let response):
