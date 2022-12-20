@@ -2,15 +2,15 @@
 import Foundation
 
 public struct Token: Decodable {
-    let id: String
-    let captureID: String
-    let walletID: String
-    let transferPending: Bool
-    let transferPendingID: String?
-    let createdAt: String
-    let updatedAt: String
-    let origin: String?
-    let claim: Bool
+    public let id: String
+    public let captureID: String
+    public let walletID: String
+    public let transferPending: Bool
+    public let transferPendingID: String?
+    public let createdAt: String?
+    public let updatedAt: String?
+    public let origin: String?
+    public let claim: Bool
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -22,5 +22,16 @@ public struct Token: Decodable {
         case updatedAt = "updated_at"
         case origin
         case claim
+    }
+    public init(id: String, captureID: String, walletID: String, transferPending: Bool, transferPendingID: String?, createdAt: String?, updatedAt: String?, origin: String?, claim: Bool) {
+        self.id = id
+        self.captureID = captureID
+        self.walletID = walletID
+        self.transferPending = transferPending
+        self.transferPendingID = transferPendingID
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.origin = origin
+        self.claim = claim
     }
 }

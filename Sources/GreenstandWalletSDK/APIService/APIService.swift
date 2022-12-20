@@ -108,7 +108,6 @@ class APIService {
 
         task.resume()
     }
-
     func clearToken() {
         self.token = nil
     }

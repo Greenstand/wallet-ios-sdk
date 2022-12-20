@@ -6,6 +6,8 @@ public protocol GreenstandWalletSDKProtocol {
     func purchaseTokens(amount: Int, completion: @escaping (Result<TokenPurchaseReceipt, Error>) -> Void)
     func sendTokens(amount: Int, receivingWalletName: String, completion: @escaping (Result<TokenTransferReceipt, Error>) -> Void)
     func setup(configuration: GreenstandWalletSDKConfiguration)
+    func getTokens(completion: @escaping (Result<[Token], Error>) -> Void)
+    func get(walletNamed wallet: String, completion: @escaping (Result<Wallet, Error>) ->Void)
 }
 
 public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
@@ -22,7 +24,10 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     public func setup(configuration: GreenstandWalletSDKConfiguration) {
         self.apiService.apiKey = configuration.apiKey
         self.apiService.rootURL = configuration.rootURL
+        self.apiService.rootWalletName = configuration.rootWalletName
+        self.apiService.rootWalletPassword = configuration.rootPassword
     }
+    
     public func createWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
         let request = CreateWalletRequest(walletName: walletName)
         apiService.performRequest(request: request, completion: { [weak self] result in
@@ -37,8 +42,6 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     }
 
     public func signInWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
-        apiService.rootWalletName = walletName
-        apiService.rootWalletPassword = password
         let request = GetWalletsRequest()
         apiService.performRequest(request: request, completion: { [weak self] result in
             switch result {
@@ -81,7 +84,20 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
             }
         })
     }
-
+    // MARK - For testing with specific wallets
+    #warning("For Testing with specific wallets")
+    public func get(walletNamed wallet: String, completion: @escaping (Result<Wallet, Error>) ->Void){
+        let request = GetSpecificWalletRequest(walletName: wallet)
+        apiService.performRequest(request: request) { result in
+            switch result {
+            case .success(let response):
+                completion(.success(response.wallets[0]))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
     public func purchaseTokens(amount: Int, completion: @escaping (Result<TokenPurchaseReceipt, Error>) -> Void) {
         completion(.success(TokenPurchaseReceipt(transactionId: "123", tokenAmount: amount, price: "$\(amount).00")))
     }
@@ -110,7 +126,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
 
         completion(.success(TokenTransferReceipt()))
     }
-    public func getTokensIn(walletNamed name: String, completion: @escaping (Result<[Token], Error>) -> Void) {
+    public func getTokens(completion: @escaping (Result<[Token], Error>) -> Void) {
         guard let authenticatedWalletName = authenticatedWalletName else {
             completion(.failure(GreenstandWalletSDKError.unauthenticated))
             return
@@ -122,6 +138,18 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
                 completion(.success(response.tokens))
             case .failure(let error):
                 completion(.failure(GreenstandWalletSDKError.tokensNotFound))
+                print(error)
+            }
+        }
+    }
+    public func getTreeDetails(forToken tokenID: String, completion: @escaping (Result<Tree, Error>) -> Void) {
+        let request = GetTreeDetailsRequest(tokenID: tokenID)
+        apiService.performRequest(request: request) { result in
+            switch result {
+            case .success(let response):
+                completion(.success(response.tree))
+            case .failure(let error):
+                print(error)
             }
         }
     }
