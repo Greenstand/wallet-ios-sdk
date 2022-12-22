@@ -80,11 +80,9 @@ class APIService {
 
         let headers = headers(apiKey: apiKey)
         let urlRequest = request.urlRequest(rootURL: rootURL, headers: headers)
-
         let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
-
+            
             DispatchQueue.main.async {
-
                 if let error = error {
                     completion(.failure(error))
                     return
@@ -110,7 +108,6 @@ class APIService {
 
         task.resume()
     }
-
     func clearToken() {
         self.token = nil
     }

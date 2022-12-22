@@ -11,9 +11,22 @@ protocol APIRequest {
 extension APIRequest {
 
     func urlRequest(rootURL: URL, headers: [String: String]) -> URLRequest {
-
-        let url = rootURL.appendingPathComponent(endpoint.rawValue)
-
+        
+        var url = rootURL.appendingPathComponent(endpoint.rawValue)
+        if method == .GET {
+            
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+            let properties = Mirror(reflecting: parameters)
+            var queryItems: [URLQueryItem] = []
+            for child in properties.children {
+                if let label = child.label, let value = child.value as? String{
+                    queryItems.append(URLQueryItem(name: label, value: value))
+                }
+            }
+            
+            urlComponents?.queryItems = queryItems
+            url = (urlComponents?.url)!
+        }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
 
