@@ -1,14 +1,17 @@
 import Foundation
 
 public enum GreenstandWalletSDKError: Error {
-    case walletNotFound
-    case walletAlreadyExists
-    case invalidURL
-    case unauthenticated
+
+    // Missing Config
     case missingAPIKey
     case missingRootURL
     case missingRootWalletName
     case missingRootWalletPassword
-    case tokensNotFound
-    case authenticationTokenNotFound
+
+    // Authentication Errors
+    case unauthenticated
+
+    // Wallet Errors
+    case walletNotFound
+    case walletAlreadyExists
 }

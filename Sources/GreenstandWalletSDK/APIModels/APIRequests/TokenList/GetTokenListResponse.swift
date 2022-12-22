@@ -1,5 +1,5 @@
 import Foundation
 
-struct TokenListResponse: Decodable {
+struct GetTokenListResponse: Decodable {
     var tokens: [Token]
 }

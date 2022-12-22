@@ -12,21 +12,8 @@ extension APIRequest {
 
     func urlRequest(rootURL: URL, headers: [String: String]) -> URLRequest {
         
-        var url = rootURL.appendingPathComponent(endpoint.rawValue)
-        if method == .GET {
-            
-            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-            let properties = Mirror(reflecting: parameters)
-            var queryItems: [URLQueryItem] = []
-            for child in properties.children {
-                if let label = child.label, let value = child.value as? String{
-                    queryItems.append(URLQueryItem(name: label, value: value))
-                }
-            }
-            
-            urlComponents?.queryItems = queryItems
-            url = (urlComponents?.url)!
-        }
+        let url = rootURL.appendingPathComponent(endpoint.rawValue)
+
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
 
@@ -34,16 +21,18 @@ extension APIRequest {
 
             let encodedURL: URL? = {
 
-                guard let jsonData = try? JSONEncoder().encode(parameters),
-                        let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any]
-                else {
-                    return nil
-                }
-
                 var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-                urlComponents?.queryItems = jsonObject.map { (key, value) in
-                    return URLQueryItem(name: key, value: "\(value)")
-                }
+                urlComponents?.queryItems = Mirror(reflecting: parameters)
+                    .children
+                    .compactMap({ (label, value) in
+                        // If we need to pass boolean value here we can decide with the API team how best to represent
+                        // This should do for 'most' cases though
+                        guard let label else {
+                            return nil
+                        }
+                        return URLQueryItem(name: label, value: "\(value)")
+                    })
+
                 return urlComponents?.url
             }()
 
