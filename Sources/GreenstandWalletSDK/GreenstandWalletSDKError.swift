@@ -10,6 +10,7 @@ public enum GreenstandWalletSDKError: Error {
 
     // Authentication Errors
     case unauthenticated
+    case invalidAuthenticationConfig
 
     // Wallet Errors
     case walletNotFound

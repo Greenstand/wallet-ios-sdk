@@ -13,19 +13,28 @@ public protocol GreenstandWalletSDKProtocol {
 public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
 
     private let apiService: APIService
+    private let authenticationService: AuthenticationService
+
     private var authenticatedWalletName: String?
 
-    public static var shared: GreenstandWalletSDKProtocol = GreenstandWalletSDK(apiService: APIService())
+    public static var shared: GreenstandWalletSDKProtocol = GreenstandWalletSDK(apiService: APIService(), authenticationService: AuthenticationService())
 
-    init(apiService: APIService) {
+    init(apiService: APIService, authenticationService: AuthenticationService) {
         self.apiService = apiService
+        self.authenticationService = authenticationService
     }
 
     public func setup(configuration: GreenstandWalletSDKConfiguration) {
-        self.apiService.apiKey = configuration.apiKey
-        self.apiService.rootURL = configuration.rootURL
-        self.apiService.rootWalletName = configuration.rootWalletName
-        self.apiService.rootWalletPassword = configuration.rootPassword
+        self.apiService.apiKey = configuration.walletAPIConfiguration.apiKey
+        self.apiService.rootURL = configuration.walletAPIConfiguration.rootURL
+        self.apiService.rootWalletName = configuration.walletAPIConfiguration.rootWalletName
+        self.apiService.rootWalletPassword = configuration.walletAPIConfiguration.rootPassword
+
+        self.authenticationService.authorizationEndpoint = configuration.authenticationServiceConfiguration.authorizationEndpoint
+        self.authenticationService.tokenEndpoint = configuration.authenticationServiceConfiguration.tokenEndpoint
+        self.authenticationService.clientId = configuration.authenticationServiceConfiguration.clientId
+        self.authenticationService.redirectURL = configuration.authenticationServiceConfiguration.redirectURL
+        self.authenticationService.userInfoEndpoint = configuration.authenticationServiceConfiguration.userInfoEndpoint
     }
 
     public func createWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {

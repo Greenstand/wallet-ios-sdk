@@ -21,8 +21,10 @@ let package = Package(
         .target(
             name: "GreenstandWalletSDK",
             dependencies: [.product(name: "AppAuth", package: "AppAuth-iOS")]
+        ),
         .testTarget(
             name: "GreenstandWalletSDKTests",
-            dependencies: ["GreenstandWalletSDK"])
+            dependencies: ["GreenstandWalletSDK"]
+        )
     ]
 )
