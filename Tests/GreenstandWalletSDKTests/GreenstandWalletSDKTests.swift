@@ -1,5 +1,5 @@
 import XCTest
-@testable import wallet_ios_sdk
+@testable import GreenstandWalletSDK
 
 final class GreenstandWalletSDKTests: XCTestCase {
 
