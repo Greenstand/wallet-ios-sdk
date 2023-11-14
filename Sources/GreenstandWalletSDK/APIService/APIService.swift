@@ -1,12 +1,9 @@
 import Foundation
 
-class APIService {
+final class APIService {
 
-    var rootURL: URL?
     var apiKey: String?
-    var rootWalletName: String?
-    var rootWalletPassword: String?
-
+    var rootURL: URL?
     private var token: String?
 
     private func headers(apiKey: String) -> [String: String] {
@@ -23,23 +20,12 @@ class APIService {
         return headers
     }
 
-    private func retrieveToken(completion: @escaping (Result<Void, Error>) -> Void) {
-
-        guard let rootWalletName else {
-            completion(.failure(GreenstandWalletSDKError.missingRootWalletName))
-            return
-        }
-
-        guard let rootWalletPassword else {
-            completion(.failure(GreenstandWalletSDKError.missingRootWalletPassword))
-            return
-        }
-
+    func retrieveToken(rootWalletName: String, rootWalletPassword: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let request = AuthenticateAccountRequest(
             wallet: rootWalletName,
             password: rootWalletPassword
         )
-
+        
         performAPIRequest(request: request) { [weak self] result in
             switch result {
             case .success(let response):
@@ -52,18 +38,12 @@ class APIService {
     }
 
     func performRequest<Request: APIRequest>(request: Request, completion: @escaping (Result<Request.ResponseType, Error>) -> Void) {
-        if token != nil {
-            performAPIRequest(request: request, completion: completion)
-        } else {
-            retrieveToken { [weak self] result in
-                switch result {
-                case .success:
-                    self?.performAPIRequest(request: request, completion: completion)
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
+        guard token != nil else {
+            completion(.failure(GreenstandWalletSDKError.unauthenticated))
+            return
         }
+        
+        performAPIRequest(request: request, completion: completion)
     }
 
     private func performAPIRequest<Request: APIRequest>(request: Request, completion: @escaping (Result<Request.ResponseType, Error>) -> Void) {
@@ -112,6 +92,6 @@ class APIService {
     }
 
     func clearToken() {
-        self.token = nil
+        token = nil
     }
 }
