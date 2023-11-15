@@ -1,7 +1,7 @@
 import Foundation
 public protocol GreenstandWalletSDKProtocol {
     func createWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void)
-    func signInWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void)
+    func signInWallet(walletName: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
     func myWallet(completion: @escaping (Result<Wallet, Error>) -> Void)
     func purchaseTokens(amount: Int, completion: @escaping (Result<TokenPurchaseReceipt, Error>) -> Void)
     func sendTokens(amount: Int, receivingWalletName: String, completion: @escaping (Result<TokenTransferReceipt, Error>) -> Void)
@@ -16,6 +16,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     private let authenticationService: AuthenticationService
 
     private var authenticatedWalletName: String?
+    private var rootToken: String?
 
     public static var shared: GreenstandWalletSDKProtocol = GreenstandWalletSDK(apiService: APIService(), authenticationService: AuthenticationService())
 
@@ -27,8 +28,6 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
     public func setup(configuration: GreenstandWalletSDKConfiguration) {
         self.apiService.apiKey = configuration.walletAPIConfiguration.apiKey
         self.apiService.rootURL = configuration.walletAPIConfiguration.rootURL
-        self.apiService.rootWalletName = configuration.walletAPIConfiguration.rootWalletName
-        self.apiService.rootWalletPassword = configuration.walletAPIConfiguration.rootPassword
 
         self.authenticationService.authorizationEndpoint = configuration.authenticationServiceConfiguration.authorizationEndpoint
         self.authenticationService.tokenEndpoint = configuration.authenticationServiceConfiguration.tokenEndpoint
@@ -50,21 +49,8 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
         })
     }
 
-    public func signInWallet(walletName: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let request = GetWalletsRequest(limit: 100)
-        apiService.performRequest(request: request, completion: { [weak self] result in
-            switch result {
-            case .success(let response):
-                guard let wallet = response.wallets.first(where: { $0.name == walletName}) else {
-                    completion(.failure(GreenstandWalletSDKError.walletNotFound))
-                    return
-                }
-                self?.authenticatedWalletName = wallet.name
-                completion(.success(wallet.name))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        })
+    public func signInWallet(walletName: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        apiService.retrieveToken(rootWalletName: walletName, rootWalletPassword: password, completion: completion)
     }
 
     public func logOutWallet() {

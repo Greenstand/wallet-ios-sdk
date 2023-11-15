@@ -5,19 +5,13 @@ public struct GreenstandWalletSDKConfiguration {
     public struct WalletAPIConfiguration {
         let apiKey: String
         let rootURL: URL
-        let rootWalletName: String
-        let rootPassword: String
 
         public init(
             apiKey: String,
-            rootURL: URL,
-            rootWalletName: String,
-            rootPassword: String
+            rootURL: URL
         ) {
             self.apiKey = apiKey
             self.rootURL = rootURL
-            self.rootWalletName = rootWalletName
-            self.rootPassword = rootPassword
         }
     }
 
