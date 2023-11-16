@@ -26,7 +26,7 @@ public struct Transfer: Decodable {
     public struct Parameters: Decodable {
 
         public struct Bundle: Decodable {
-            public let bundleSize: Int
+            public let bundleSize: String
         }
 
         public let bundle: Bundle
