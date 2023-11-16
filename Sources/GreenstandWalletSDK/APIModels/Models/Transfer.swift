@@ -9,12 +9,12 @@ import Foundation
 
 public struct Transfer: Decodable {
 
-    public enum TransferType: Decodable {
+    public enum TransferType: String, Decodable {
         case send
         case receive
     }
 
-    public enum TransferState: Decodable {
+    public enum TransferState: String, Decodable {
         case all
         case requested
         case pending
