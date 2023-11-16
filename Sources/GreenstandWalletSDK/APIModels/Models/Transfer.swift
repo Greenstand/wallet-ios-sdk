@@ -23,8 +23,18 @@ public struct Transfer: Decodable {
         case failed
     }
 
+    public struct Parameters: Decodable {
+
+        public struct Bundle: Decodable {
+            public let bundleSize: Int
+        }
+
+        public let bundle: Bundle
+    }
+
     public let id: String
     public let `type`: TransferType
+    public let parameters: Parameters
     public let state: TransferState
     public let createdAt: Date
     public let closedAt: Date
@@ -37,6 +47,7 @@ public struct Transfer: Decodable {
     enum CodingKeys: String, CodingKey {
         case id
         case `type`
+        case parameters
         case state
         case createdAt = "created_at"
         case closedAt = "closed_at"
