@@ -8,7 +8,7 @@ public protocol GreenstandWalletSDKProtocol {
     func setup(configuration: GreenstandWalletSDKConfiguration)
     func getTokens(completion: @escaping (Result<[Token], Error>) -> Void)
     func get(walletNamed wallet: String, completion: @escaping (Result<Wallet, Error>) ->Void)
-    func getTokenTransfers(for wallet: String, limit: Int, completion: @escaping (Result<[Transfer], Error>) -> Void)
+    func getTokenTransfers(for wallet: String, limit: Int, completion: @escaping (Result<[TokenTransfer], Error>) -> Void)
 }
 
 public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
@@ -159,7 +159,7 @@ public class GreenstandWalletSDK: GreenstandWalletSDKProtocol {
         }
     }
 
-    public func getTokenTransfers(for wallet: String, limit: Int, completion: @escaping (Result<[Transfer], Error>) -> Void) {
+    public func getTokenTransfers(for wallet: String, limit: Int, completion: @escaping (Result<[TokenTransfer], Error>) -> Void) {
 
         let request = GetTokenTransfersListRequest(wallet: wallet, limit: limit)
 

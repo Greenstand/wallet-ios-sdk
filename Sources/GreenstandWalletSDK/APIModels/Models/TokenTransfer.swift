@@ -1,5 +1,5 @@
 //
-//  Transfer.swift
+//  TokenTransfer.swift
 //  trings
 //
 //  Created by Drew Barnes on 13/11/2023.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Transfer: Decodable {
+public struct TokenTransfer: Decodable {
 
     public enum TransferType: String, Decodable {
         case send
