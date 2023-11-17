@@ -80,7 +80,11 @@ final class APIService {
                 }
 
                 do {
-                    let decodedObject = try JSONDecoder().decode(Request.ResponseType.self, from: data)
+                    let decoder = JSONDecoder()
+                    /// Set a default Date Decoding strategy to handle all date transformations automatatically
+                    decoder.dateDecodingStrategy = .formatted(.iso18601WithTZ)
+
+                    let decodedObject = try decoder.decode(Request.ResponseType.self, from: data)
                     completion(.success(decodedObject))
                 } catch {
                     completion(.failure(error))
@@ -94,4 +98,13 @@ final class APIService {
     func clearToken() {
         token = nil
     }
+}
+
+private extension DateFormatter {
+
+    static let iso18601WithTZ = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        return formatter
+    }()
 }
